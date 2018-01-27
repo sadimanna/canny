@@ -12,8 +12,6 @@ def get_edges(I,sd):
 		dog2d = deroGauss(5,sd,angles[i])
 		Idog2dtemp = abs(conv2(I,dog2d,mode='same',boundary='fill'))
 		Idog2dtemp[Idog2dtemp<0]=0
-		#Idog2dtemp = Idog2dtemp + np.min(Idog2dtemp)
-		#Idog2d[i,:,:] = np.uint8(Idog2dtemp)
 		Idog2d[i,:,:] = Idog2dtemp
 	return Idog2d
 #...........................................................................................
@@ -88,8 +86,6 @@ def hysteresis(I):
 					Ipad[i,j] = 0
 	Ih = Ipad[1:r+1,1:c+1]
 	return Ih
-
-
 #...........................................................................................
 #Reading the image
 img = cv2.imread('108073.jpg')
@@ -109,8 +105,6 @@ nang = len(angles)
 print 'Calculating Gradient...\n'
 img_edges = get_edges(gimg,2)
 print 'after gradient: ',np.max(img_edges),'\n'
-#for i in xrange(nang):
-#	img_edges[i,:,:] = img_edges[i,:,:]*255/np.max(img_edges[i,:,:])
 #...........................................................................................
 #Non-max suppression
 print 'Suppressing Non-maximas...\n'
@@ -120,8 +114,6 @@ print 'after nms: ', np.max(img_edges)
 img_edge = np.max(img_edges,axis=0)
 lim = np.uint8(np.max(img_edge))
 plt.imshow(img_edge)
-#histnms = cv2.calcHist([np.uint8(img_edge)],[0],None,[lim+1],[0,256])
-#plt.hist(img_edge.ravel(),lim,[0,256])
 plt.show()
 #...........................................................................................
 #Converting to uint8
@@ -129,15 +121,10 @@ plt.show()
 #...........................................................................................
 #Thresholding
 print 'Calculating Threshold...\n'
-#for i in xrange(nang):
 th = get_threshold(gimg)
 the = get_threshold(img_edge)
-#print np.count_nonzero(img_edge>=the)
-#the = 6
-#print np.count_nonzero(img_edge>=the)
 #...........................................................................................
 print '\nThresholding...\n'
-#for i in xrange(nang):
 img_edge = threshold(img_edge, the*0.25)
 #cv2.imshow('afterthe',img_edge)
 #...........................................................................................
@@ -149,8 +136,8 @@ img_edge = nonmaxsup(hysteresis(img_edge),90)
 #img_edge = np.max(img_edges,axis=0)
 #...........................................................................................
 #OpenCV Canny Function
-#img_canny = cv2.Canny(np.uint8(gimg),th/3,th)
+img_canny = cv2.Canny(np.uint8(gimg),th/3,th)
 cv2.imshow('Uncanny',img_edge)
-#cv2.imshow('Canny',img_canny)
+cv2.imshow('Canny',img_canny)
 print 'Time taken :: ', str(time.time()-stime)+' seconds...'
 cv2.waitKey(0)
